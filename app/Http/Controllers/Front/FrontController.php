@@ -22,11 +22,12 @@ class FrontController extends Controller
         return view('frontend.category', compact('category'));
     }
 
-    public function view($slug)
+    public function category_view($slug)
     {
         if (Category::where('slug', $slug)->exists()) {
             $category = Category::where('slug', $slug)->first();
             $product = Product::where('cate_id', $category->id)->where('status', '0')->get();
+
             return view('frontend.product.index', compact('category', 'product'));
         }
         else 
@@ -34,5 +35,21 @@ class FrontController extends Controller
             return redirect('/')->with('status', 'Kategoi tidak ditemukan');
         }
         
+    }
+
+    public function product_view($cate_slug, $product_slug)
+    {
+        if (Category::where('slug', $cate_slug)->exists()) {
+            
+            if (Product::where('slug', $product_slug)->exists()) 
+            {
+                $product = Product::where('slug', $product_slug)->first();
+                return view("frontend.product.view", compact('product'));
+            }
+            else {
+                return redirect('/')->with('status', 'Tautan ini rusak');
+            }
+        }
+        return redirect('/')->with('status', 'Tidak ada kategori seperti itu');
     }
 }
