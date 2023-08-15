@@ -11,7 +11,7 @@
     </div>
 
     <div class="container">
-        <div class="card shadow">
+        <div class="card shadow product_data">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-4 border-right">
@@ -39,16 +39,17 @@
                         @endif
                         <div class="row mt-2">
                             <div class="col-md-2">
+                                <input type="hidden" value="{{ $product->id }}" class="product_id">
                                 <label for="Quality">Kualitas</label>
-                                <div class="input-group text-center mb-3">
-                                    <span for="" class="input-group-text">-</span>
-                                    <input type="text" value="1" name="quantity" class="form-control">
-                                    <span for="" class="input-group-text">+</span>
+                                <div class="input-group text-center mb-3" style="width: 120px">
+                                    <button for="" class="input-group-text decrement-int">-</button>
+                                    <input type="text" value="1" name="quantity" class="form-control quantity-input text-center">
+                                    <button for="" class="input-group-text increment-int">+</button>
                                 </div>
                             </div>
                             <div class="col-md-10">
                                 <br>
-                                <button type="submit" class="btn btn-success me-3 float-start">Tambah ke keranjang 
+                                <button type="submit" class="btn btn-success me-3 addToCart float-start">Tambah ke keranjang 
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-basket" viewBox="0 0 16 16">
                                         <path d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9H2zM1 7v1h14V7H1zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5zm2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5z"/>
                                     </svg> 
@@ -66,4 +67,59 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script>
+        // logika megambil jumlah baran untuk di masukkan ke keranjang
+        $(document).ready(function () {
+            $('.addToCart').click(function (e) { 
+                e.preventDefault();
+                
+                var product_id = $(this).closest('.product_data').find('.product_id').val();
+                var product_qty = $(this).closest('.product_data').find('.quantity-input').val();
+
+                $.ajax({
+                    method: "GET",
+                    url: "/add-to-cart",
+                    data: {
+                        'product_id': product_id,
+                        'product_qty': product_qty,
+                    },
+                    success: function (response) {
+                        swal("Berhasil...!", response.status, "success");
+                    }
+                });
+            });
+        });
+
+        // logika menghitung jumlah arang
+        $(document).ready(function () {
+            $('.increment-int').click(function (e) { 
+                e.preventDefault();
+                
+                var inc_value = $('.quantity-input').val();
+                var value = parseInt(inc_value, 10);
+                value = isNaN(value) ? 0 : value;
+                if (value < 10) 
+                {
+                    value++;
+                    $('.quantity-input').val(value);    
+                }
+            });
+
+            $('.decrement-int').click(function (e) { 
+                e.preventDefault();
+                
+                var dec_value = $('.quantity-input').val();
+                var value = parseInt(dec_value, 10);
+                value = isNaN(value) ? 0 : value;
+                if (value > 1) 
+                {
+                    value--;
+                    $('.quantity-input').val(value);    
+                }
+            });
+        });
+    </script>
 @endsection

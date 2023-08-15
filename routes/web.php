@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\FrontendController;
 use App\Http\Controllers\Admin\Productontroller;
+use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\FrontController;
 
 /*
@@ -25,8 +26,11 @@ Route::get('/view-category/{slug}', [FrontController::class, 'category_view']);
 Route::get('/view-category/{cate_slug}/{product_slug}', [FrontController::class, 'product_view']);
 
 Auth::routes();
-
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/add-to-cart', [CartController::class, 'addToCart']);
+});
 
 Route::middleware(['auth','isAdmin'])->group(function () {
 
